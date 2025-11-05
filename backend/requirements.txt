@@ -1,0 +1,73 @@
+# Compass Backend - Python Dependencies
+
+# Web Framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+
+# Database
+sqlalchemy==2.0.23
+alembic==1.12.1
+psycopg2-binary==2.9.9
+geoalchemy2==0.14.2
+
+# Redis & Caching
+redis==5.0.1
+hiredis==2.2.3
+
+# Background Tasks
+celery==5.3.4
+flower==2.0.1
+
+# Authentication & Security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-dotenv==1.0.0
+pydantic[email]==2.5.2
+pydantic-settings==2.1.0
+
+# Optimization & ML
+ortools==9.8.3296
+numpy==1.26.2
+scikit-learn==1.3.2
+
+# LLM & Vector DB
+openai==1.3.7
+anthropic==0.7.7
+qdrant-client==1.6.9
+sentence-transformers==2.2.2
+
+# Web Scraping
+httpx==0.25.2
+beautifulsoup4==4.12.2
+lxml==4.9.3
+feedparser==6.0.10
+icalendar==5.0.11
+
+# Geocoding & Geospatial
+geopy==2.4.1
+pygeohash==1.2.0
+
+# Email
+sendgrid==6.11.0
+
+# Utilities
+python-dateutil==2.8.2
+pytz==2023.3
+Levenshtein==0.23.0
+
+# Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+faker==20.1.0
+httpx==0.25.2
+
+# Development
+black==23.12.0
+ruff==0.1.6
+mypy==1.7.1
+ipython==8.18.1
+
+# Monitoring
+sentry-sdk==1.38.0
