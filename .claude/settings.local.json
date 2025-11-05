@@ -4,7 +4,12 @@
       "Bash(docker-compose ps:*)",
       "Bash(docker-compose up:*)",
       "Bash(git init:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat: Bootstrap Compass MVP foundation\n\nImplement Phase 1 foundation with complete backend and frontend scaffolding.\n\nBackend:\n- FastAPI application with async SQLAlchemy + PostgreSQL\n- JWT-based authentication (access + refresh tokens)\n- Core models: User, Family, ChildProfile with JSONB temperament/goals\n- Complete CRUD APIs for auth, families, and children endpoints\n- Alembic migrations setup\n- Security utilities (bcrypt password hashing, JWT tokens)\n- Dependency injection for auth and database sessions\n- Environment configuration with Pydantic\n- Unit tests for security utilities\n\nFrontend:\n- React 18 + TypeScript + Vite setup\n- Tailwind CSS with custom design system (parent-focused colors)\n- Zustand state management for auth\n- Axios API client with token interceptors\n- Authentication pages (Login, Register, Dashboard)\n- React Router navigation\n- TypeScript types aligned with backend models\n\nInfrastructure:\n- Docker Compose (PostgreSQL 16 + PostGIS, Redis 7, Qdrant)\n- Development environment configuration\n- Project documentation and README updates\n\nArchitecture Principles:\n- Aligned with compass-parent-advocate persona (clarity, transparency)\n- Multi-tenant ready with family-based data isolation\n- Soft delete for child profiles\n- PostGIS for geospatial queries\n- Predefined + custom goals taxonomy for future ML enrichment\n\nReady for Phase 2: Catalog ingestion pipeline and scrapers.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git remote add:*)",
+      "Bash(git branch:*)",
+      "Bash(git push:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []

@@ -11,7 +11,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api.endpoints import auth, children, families
+from app.api.endpoints import activities, auth, children, families
 from app.core.config import settings
 from app.db.base import close_db, init_db
 
@@ -87,6 +87,7 @@ async def health_check() -> dict[str, str]:
 app.include_router(auth.router, prefix=settings.api_v1_prefix)
 app.include_router(families.router, prefix=settings.api_v1_prefix)
 app.include_router(children.router, prefix=settings.api_v1_prefix)
+app.include_router(activities.router, prefix=settings.api_v1_prefix)
 
 
 # Global exception handler
