@@ -11,7 +11,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api.endpoints import activities, auth, children, families
+from app.api.endpoints import activities, auth, children, families, recommendations
 from app.core.config import settings
 from app.db.base import close_db, init_db
 
@@ -36,9 +36,10 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info(f"Debug mode: {settings.debug}")
 
     # Initialize database (only in development/testing)
-    if settings.environment in ("development", "test"):
-        logger.info("Initializing database...")
-        await init_db()
+    # Note: In production, use Alembic migrations instead
+    # if settings.environment in ("development", "test"):
+    #     logger.info("Initializing database...")
+    #     await init_db()
 
     yield
 
@@ -88,6 +89,7 @@ app.include_router(auth.router, prefix=settings.api_v1_prefix)
 app.include_router(families.router, prefix=settings.api_v1_prefix)
 app.include_router(children.router, prefix=settings.api_v1_prefix)
 app.include_router(activities.router, prefix=settings.api_v1_prefix)
+app.include_router(recommendations.router, prefix=settings.api_v1_prefix)
 
 
 # Global exception handler

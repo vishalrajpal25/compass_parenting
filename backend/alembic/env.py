@@ -18,6 +18,11 @@ from app.models.base import Base
 from app.models.user import User  # noqa
 from app.models.family import Family  # noqa
 from app.models.child import ChildProfile  # noqa
+from app.models.provider import Provider  # noqa
+from app.models.venue import Venue  # noqa
+from app.models.activity import Activity  # noqa
+from app.models.recommendation import Recommendation  # noqa
+from app.models.scraper_log import ScraperLog  # noqa
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -29,7 +34,12 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # Set the SQLAlchemy URL from settings
-config.set_main_option("sqlalchemy.url", settings.database_url_str)
+# Convert asyncpg URL to sync psycopg2 URL for Alembic
+db_url = settings.database_url_str.replace("+asyncpg", "")
+# Ensure we're using postgresql:// not postgresql+asyncpg://
+if db_url.startswith("postgresql+asyncpg://"):
+    db_url = db_url.replace("postgresql+asyncpg://", "postgresql://")
+config.set_main_option("sqlalchemy.url", db_url)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
@@ -75,16 +85,15 @@ def do_run_migrations(connection: Connection) -> None:
 
 async def run_async_migrations() -> None:
     """Run migrations in async mode."""
-    connectable = async_engine_from_config(
-        config.get_section(config.config_ini_section, {}),
-        prefix="sqlalchemy.",
-        poolclass=pool.NullPool,
-    )
+    # Use sync engine for migrations (Alembic works better with sync)
+    from sqlalchemy import create_engine
+    url = config.get_main_option("sqlalchemy.url")
+    sync_engine = create_engine(url, poolclass=pool.NullPool)
 
-    async with connectable.connect() as connection:
-        await connection.run_sync(do_run_migrations)
+    with sync_engine.connect() as connection:
+        do_run_migrations(connection)
 
-    await connectable.dispose()
+    sync_engine.dispose()
 
 
 def run_migrations_online() -> None:

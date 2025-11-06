@@ -1,8 +1,10 @@
 """
+from __future__ import annotations
+
 Activity model for enrichment activities.
 """
 from datetime import date, time
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional
 
 from sqlalchemy import Date, ForeignKey, Integer, Numeric, String, Text, Time
 from sqlalchemy.dialects.postgresql import JSONB
@@ -32,7 +34,7 @@ class Activity(Base, TimestampMixin):
         nullable=False,
         index=True,
     )
-    venue_id: Mapped[int | None] = mapped_column(
+    venue_id: Mapped[Optional[int]] = mapped_column(
         ForeignKey("venues.id", ondelete="SET NULL"),
         nullable=True,
         index=True,
@@ -40,47 +42,47 @@ class Activity(Base, TimestampMixin):
 
     # Basic information
     name: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
-    description: Mapped[str | None] = mapped_column(Text, nullable=True)
-    activity_type: Mapped[str | None] = mapped_column(
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    activity_type: Mapped[Optional[str]] = mapped_column(
         String(50),
         nullable=True,
         comment="sports, arts, stem, music, language, etc.",
     )
 
     # Schedule (RRULE support for recurring events)
-    start_date: Mapped[date | None] = mapped_column(Date, nullable=True, index=True)
-    end_date: Mapped[date | None] = mapped_column(Date, nullable=True)
-    start_time: Mapped[time | None] = mapped_column(Time, nullable=True)
-    end_time: Mapped[time | None] = mapped_column(Time, nullable=True)
-    rrule: Mapped[str | None] = mapped_column(
+    start_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True, index=True)
+    end_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+    start_time: Mapped[Optional[time]] = mapped_column(Time, nullable=True)
+    end_time: Mapped[Optional[time]] = mapped_column(Time, nullable=True)
+    rrule: Mapped[Optional[str]] = mapped_column(
         Text,
         nullable=True,
         comment="iCalendar RRULE for recurring events",
     )
 
     # Days of week (for simple recurring patterns)
-    days_of_week: Mapped[list[str] | None] = mapped_column(
+    days_of_week: Mapped[Optional[list[str]]] = mapped_column(
         JSONB,
         nullable=True,
         comment='e.g., ["monday", "wednesday", "friday"]',
     )
 
     # Age restrictions
-    min_age: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    max_age: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    age_range_text: Mapped[str | None] = mapped_column(
+    min_age: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    max_age: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    age_range_text: Mapped[Optional[str]] = mapped_column(
         String(100),
         nullable=True,
         comment='Original text like "5-7 years" or "Kindergarten-2nd grade"',
     )
 
     # Pricing (in cents)
-    price_cents: Mapped[int | None] = mapped_column(
+    price_cents: Mapped[Optional[int]] = mapped_column(
         Integer,
         nullable=True,
         comment="Price in cents (e.g., 5000 = $50.00)",
     )
-    price_text: Mapped[str | None] = mapped_column(
+    price_text: Mapped[Optional[str]] = mapped_column(
         String(100),
         nullable=True,
         comment='Original price text like "$50/month" or "Free"',
@@ -92,17 +94,17 @@ class Activity(Base, TimestampMixin):
     )
 
     # Registration
-    registration_url: Mapped[str | None] = mapped_column(Text, nullable=True)
-    registration_deadline: Mapped[date | None] = mapped_column(Date, nullable=True)
-    registration_status: Mapped[str | None] = mapped_column(
+    registration_url: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    registration_deadline: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+    registration_status: Mapped[Optional[str]] = mapped_column(
         String(20),
         nullable=True,
         comment="open, closed, waitlist, full",
     )
-    max_participants: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    max_participants: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
 
     # Activity attributes (JSONB for flexibility)
-    attributes: Mapped[dict[str, Any] | None] = mapped_column(
+    attributes: Mapped[Optional[dict[str, Any]]] = mapped_column(
         JSONB,
         nullable=True,
         comment="""
@@ -129,12 +131,12 @@ class Activity(Base, TimestampMixin):
     )
 
     # Data quality
-    source_url: Mapped[str | None] = mapped_column(
+    source_url: Mapped[Optional[str]] = mapped_column(
         Text,
         nullable=True,
         comment="Original URL where this activity was found",
     )
-    last_verified: Mapped[date | None] = mapped_column(
+    last_verified: Mapped[Optional[date]] = mapped_column(
         Date,
         nullable=True,
         comment="Last date this activity was verified/scraped",

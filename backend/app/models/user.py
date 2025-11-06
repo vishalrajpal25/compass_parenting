@@ -1,4 +1,6 @@
 """
+from __future__ import annotations
+
 User model for authentication.
 """
 from typing import TYPE_CHECKING

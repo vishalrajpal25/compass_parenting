@@ -18,11 +18,18 @@ export function LoginPage() {
 
     try {
       const response = await authApi.login({ email, password })
+      // Store token first so interceptor can use it
+      localStorage.setItem('access_token', response.access_token)
+      localStorage.setItem('refresh_token', response.refresh_token)
+      // Now get user with authenticated request
       const user = await authApi.getCurrentUser()
       setAuth(user, response.access_token, response.refresh_token)
       navigate('/dashboard')
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Login failed. Please try again.')
+      // Clear tokens on error
+      localStorage.removeItem('access_token')
+      localStorage.removeItem('refresh_token')
     } finally {
       setLoading(false)
     }

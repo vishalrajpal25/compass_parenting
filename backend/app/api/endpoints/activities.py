@@ -2,6 +2,7 @@
 Activity catalog endpoints.
 """
 from fastapi import APIRouter, HTTPException, Query, status
+from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -19,9 +20,9 @@ async def list_activities(
     db: DatabaseSession,
     skip: int = Query(0, ge=0, description="Number of records to skip"),
     limit: int = Query(50, ge=1, le=100, description="Number of records to return"),
-    activity_type: str | None = Query(None, description="Filter by activity type"),
-    min_age: int | None = Query(None, ge=0, le=18, description="Filter by minimum age"),
-    max_age: int | None = Query(None, ge=0, le=18, description="Filter by maximum age"),
+    activity_type: Optional[str] = Query(None, description="Filter by activity type"),
+    min_age: Optional[int] = Query(None, ge=0, le=18, description="Filter by minimum age"),
+    max_age: Optional[int] = Query(None, ge=0, le=18, description="Filter by maximum age"),
     is_active: bool = Query(True, description="Filter by active status"),
 ) -> list[Activity]:
     """

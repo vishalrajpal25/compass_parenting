@@ -36,7 +36,7 @@ class Settings(BaseSettings):
 
     # Database
     database_url: PostgresDsn = Field(
-        default="postgresql+asyncpg://compass:compass@localhost:5432/compass",
+        default="postgresql+asyncpg://compass:compass_dev_password@localhost:5433/compass",
         description="PostgreSQL database URL"
     )
     database_echo: bool = Field(default=False, description="Echo SQL queries")

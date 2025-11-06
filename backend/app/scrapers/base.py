@@ -5,7 +5,7 @@ import hashlib
 import logging
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
-from typing import Any
+from typing import Any, Optional
 
 import pygeohash
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -91,8 +91,8 @@ class BaseScraper(ABC):
     def generate_canon_hash(
         self,
         name: str,
-        start_date: str | None,
-        geohash: str | None,
+        start_date: Optional[str],
+        geohash: Optional[str],
         org_name: str,
     ) -> str:
         """
@@ -235,7 +235,7 @@ class BaseScraper(ABC):
 
         return activity
 
-    async def create_scraper_log(self, status: str, http_status: int | None = None) -> ScraperLog:
+    async def create_scraper_log(self, status: str, http_status: Optional[int] = None) -> ScraperLog:
         """
         Create scraper log entry with metrics.
 

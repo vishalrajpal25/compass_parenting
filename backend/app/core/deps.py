@@ -1,7 +1,7 @@
 """
 Dependencies for FastAPI routes.
 """
-from typing import Annotated
+from typing import Annotated, Optional
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -14,18 +14,19 @@ from app.db.base import get_db
 from app.models.user import User
 
 # HTTP Bearer security scheme for JWT tokens
-security = HTTPBearer()
+# auto_error=False allows endpoints to handle missing tokens gracefully
+security = HTTPBearer(auto_error=False)
 
 
 async def get_current_user(
-    credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)],
+    credentials: Annotated[Optional[HTTPAuthorizationCredentials], Depends(security)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> User:
     """
     Get current authenticated user from JWT token.
 
     Args:
-        credentials: HTTP Bearer token
+        credentials: HTTP Bearer token (optional)
         db: Database session
 
     Returns:
@@ -40,21 +41,52 @@ async def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
 
+    if credentials is None:
+        raise credentials_exception
+
     try:
         token = credentials.credentials
-        payload = decode_token(token)
-        user_id: str | None = payload.get("sub")
-        token_type: str | None = payload.get("type")
-
-        if user_id is None or token_type != "access":
+        if not token:
             raise credentials_exception
 
-    except JWTError:
+        payload = decode_token(token)
+        user_id: Optional[str] = payload.get("sub")
+        token_type: Optional[str] = payload.get("type")
+
+        if user_id is None:
+            raise credentials_exception
+
+        if token_type != "access":
+            raise credentials_exception
+
+        # Convert user_id to int
+        try:
+            user_id_int = int(user_id)
+        except (ValueError, TypeError):
+            raise credentials_exception
+
+    except JWTError as e:
+        # Log the actual JWT error for debugging
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.debug(f"JWT validation error: {str(e)}")
+        raise credentials_exception
+    except Exception as e:
+        # Catch any other exceptions
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.debug(f"Token validation error: {str(e)}")
         raise credentials_exception
 
     # Get user from database
-    result = await db.execute(select(User).where(User.id == int(user_id)))
-    user = result.scalar_one_or_none()
+    try:
+        result = await db.execute(select(User).where(User.id == user_id_int))
+        user = result.scalar_one_or_none()
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.debug(f"Database query error: {str(e)}")
+        raise credentials_exception
 
     if user is None:
         raise credentials_exception

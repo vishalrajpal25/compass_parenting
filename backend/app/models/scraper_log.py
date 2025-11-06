@@ -1,8 +1,10 @@
 """
+from __future__ import annotations
+
 Scraper log model for tracking scraper runs and quality metrics.
 """
 from datetime import datetime
-from typing import Any
+from typing import Any, Optional
 
 from sqlalchemy import DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import JSONB
@@ -41,7 +43,7 @@ class ScraperLog(Base, TimestampMixin):
         nullable=False,
         index=True,
     )
-    run_completed_at: Mapped[datetime | None] = mapped_column(
+    run_completed_at: Mapped[Optional[datetime]] = mapped_column(
         DateTime(timezone=True),
         nullable=True,
     )
@@ -78,30 +80,30 @@ class ScraperLog(Base, TimestampMixin):
     )
 
     # Quality metrics
-    pass_rate: Mapped[float | None] = mapped_column(
+    pass_rate: Mapped[Optional[float]] = mapped_column(
         nullable=True,
         comment="Percentage of activities that passed validation (0-100)",
     )
-    http_status: Mapped[int | None] = mapped_column(
+    http_status: Mapped[Optional[int]] = mapped_column(
         Integer,
         nullable=True,
         comment="HTTP status code from data source",
     )
 
     # Errors and warnings
-    errors: Mapped[list[str] | None] = mapped_column(
+    errors: Mapped[Optional[list[str]]] = mapped_column(
         JSONB,
         nullable=True,
         comment="List of error messages",
     )
-    warnings: Mapped[list[str] | None] = mapped_column(
+    warnings: Mapped[Optional[list[str]]] = mapped_column(
         JSONB,
         nullable=True,
         comment="List of warning messages",
     )
 
     # Validation failures breakdown
-    validation_failures: Mapped[dict[str, Any] | None] = mapped_column(
+    validation_failures: Mapped[Optional[dict[str, Any]]] = mapped_column(
         JSONB,
         nullable=True,
         comment="""
@@ -115,7 +117,7 @@ class ScraperLog(Base, TimestampMixin):
     )
 
     # Notes
-    notes: Mapped[str | None] = mapped_column(
+    notes: Mapped[Optional[str]] = mapped_column(
         Text,
         nullable=True,
         comment="Additional notes about the scraper run",

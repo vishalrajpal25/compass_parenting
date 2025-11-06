@@ -2,17 +2,19 @@
 Security utilities for password hashing and JWT token management.
 """
 from datetime import datetime, timedelta, timezone
-from typing import Any
+from typing import Any, Optional, Union
 
+import bcrypt
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
 from app.core.config import settings
 
 # Password hashing context
+# Use bcrypt directly to avoid passlib compatibility issues with bcrypt 5.x
 pwd_context = CryptContext(
-    schemes=settings.pwd_context_schemes,
-    deprecated=settings.pwd_context_deprecated,
+    schemes=["bcrypt"],
+    deprecated="auto",
 )
 
 
@@ -27,7 +29,12 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     Returns:
         True if password matches, False otherwise
     """
-    return pwd_context.verify(plain_password, hashed_password)
+    try:
+        # Use bcrypt directly to avoid passlib initialization issues
+        return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
+    except Exception:
+        # Fallback to passlib if direct bcrypt fails
+        return pwd_context.verify(plain_password, hashed_password)
 
 
 def get_password_hash(password: str) -> str:
@@ -40,13 +47,15 @@ def get_password_hash(password: str) -> str:
     Returns:
         Hashed password
     """
-    return pwd_context.hash(password)
+    # Use bcrypt directly to avoid passlib initialization issues
+    hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    return hashed.decode('utf-8')
 
 
 def create_access_token(
-    subject: str | int,
-    expires_delta: timedelta | None = None,
-    additional_claims: dict[str, Any] | None = None,
+    subject: Union[str, int],
+    expires_delta: Optional[timedelta] = None,
+    additional_claims: Optional[dict[str, Any]] = None,
 ) -> str:
     """
     Create a JWT access token.
@@ -92,8 +101,8 @@ def create_access_token(
 
 
 def create_refresh_token(
-    subject: str | int,
-    expires_delta: timedelta | None = None,
+    subject: Union[str, int],
+    expires_delta: Optional[timedelta] = None,
 ) -> str:
     """
     Create a JWT refresh token.
@@ -139,6 +148,9 @@ def decode_token(token: str) -> dict[str, Any]:
     Raises:
         JWTError: If token is invalid or expired
     """
+    if not token:
+        raise JWTError("Token is empty")
+
     try:
         payload = jwt.decode(
             token,
@@ -147,4 +159,8 @@ def decode_token(token: str) -> dict[str, Any]:
         )
         return payload
     except JWTError as e:
+        # Re-raise the original JWTError without wrapping
+        raise e
+    except Exception as e:
+        # Catch any other unexpected errors
         raise JWTError(f"Could not validate credentials: {str(e)}") from e

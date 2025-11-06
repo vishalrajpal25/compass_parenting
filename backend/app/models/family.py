@@ -1,7 +1,9 @@
 """
+from __future__ import annotations
+
 Family model for household profile.
 """
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from geoalchemy2 import Geography
 from sqlalchemy import ForeignKey, Integer, Numeric, String, Text
@@ -32,14 +34,14 @@ class Family(Base, TimestampMixin):
     )
 
     # Location (PostGIS Point)
-    location: Mapped[str | None] = mapped_column(
+    location: Mapped[Optional[str]] = mapped_column(
         Geography(geometry_type="POINT", srid=4326),
         nullable=True,
     )
-    address: Mapped[str | None] = mapped_column(Text, nullable=True)
-    city: Mapped[str | None] = mapped_column(String(100), nullable=True)
-    state: Mapped[str | None] = mapped_column(String(50), nullable=True)
-    zip_code: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    address: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    city: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    state: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    zip_code: Mapped[Optional[str]] = mapped_column(String(10), nullable=True)
 
     # Timezone (e.g., "America/Los_Angeles")
     timezone: Mapped[str] = mapped_column(
@@ -49,17 +51,17 @@ class Family(Base, TimestampMixin):
     )
 
     # Budget constraints
-    budget_monthly: Mapped[int | None] = mapped_column(
+    budget_monthly: Mapped[Optional[int]] = mapped_column(
         Integer,
         nullable=True,
         comment="Monthly budget in cents (e.g., 50000 = $500.00)",
     )
 
     # Calendar import URL (ICS)
-    calendar_ics_url: Mapped[str | None] = mapped_column(Text, nullable=True)
+    calendar_ics_url: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     # Partner email for sharing (token-based collaboration)
-    partner_email: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    partner_email: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 
     # Relationships
     owner: Mapped["User"] = relationship("User", back_populates="family")

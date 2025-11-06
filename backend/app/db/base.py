@@ -9,10 +9,10 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
-from sqlalchemy.orm import declarative_base
 from sqlalchemy.pool import NullPool
 
 from app.core.config import settings
+from app.models.base import Base
 
 # Create async engine
 engine = create_async_engine(
@@ -20,6 +20,9 @@ engine = create_async_engine(
     echo=settings.database_echo,
     poolclass=NullPool if settings.environment == "test" else None,
     future=True,
+    connect_args={
+        "ssl": False,  # Disable SSL for local development
+    } if settings.environment == "development" else {},
 )
 
 # Create async session maker
@@ -30,9 +33,6 @@ AsyncSessionLocal = async_sessionmaker(
     autocommit=False,
     autoflush=False,
 )
-
-# Base class for models
-Base = declarative_base()
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:

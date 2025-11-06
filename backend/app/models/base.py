@@ -1,8 +1,10 @@
 """
 Base model with common fields and utilities.
 """
+from __future__ import annotations
+
 from datetime import datetime, timezone
-from typing import Any
+from typing import Any, Optional
 
 from sqlalchemy import DateTime, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
@@ -34,7 +36,7 @@ class TimestampMixin:
 class SoftDeleteMixin:
     """Mixin for soft delete functionality."""
 
-    deleted_at: Mapped[datetime | None] = mapped_column(
+    deleted_at: Mapped[Optional[datetime]] = mapped_column(
         DateTime(timezone=True),
         nullable=True,
         default=None,

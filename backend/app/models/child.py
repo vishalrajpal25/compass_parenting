@@ -1,8 +1,10 @@
 """
+from __future__ import annotations
+
 Child profile model with temperament, goals, and constraints.
 """
 from datetime import date
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional
 
 from sqlalchemy import Date, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import JSONB
@@ -56,7 +58,7 @@ class ChildProfile(Base, TimestampMixin, SoftDeleteMixin):
     birth_date: Mapped[date] = mapped_column(Date, nullable=False)
 
     # Temperament (JSONB)
-    temperament: Mapped[dict[str, Any] | None] = mapped_column(
+    temperament: Mapped[Optional[dict[str, Any]]] = mapped_column(
         JSONB,
         nullable=True,
         comment="""
@@ -77,17 +79,17 @@ class ChildProfile(Base, TimestampMixin, SoftDeleteMixin):
     )
 
     # Goals (predefined + custom)
-    primary_goal: Mapped[str | None] = mapped_column(String(100), nullable=True)
-    secondary_goal: Mapped[str | None] = mapped_column(String(100), nullable=True)
-    tertiary_goal: Mapped[str | None] = mapped_column(String(100), nullable=True)
-    custom_goals: Mapped[list[str] | None] = mapped_column(
+    primary_goal: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    secondary_goal: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    tertiary_goal: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    custom_goals: Mapped[Optional[list[str]]] = mapped_column(
         JSONB,
         nullable=True,
         comment="Free-form goals for future taxonomy enrichment",
     )
 
     # Constraints (JSONB)
-    constraints: Mapped[dict[str, Any] | None] = mapped_column(
+    constraints: Mapped[Optional[dict[str, Any]]] = mapped_column(
         JSONB,
         nullable=True,
         comment="""
@@ -107,14 +109,14 @@ class ChildProfile(Base, TimestampMixin, SoftDeleteMixin):
     )
 
     # Activity preferences
-    preferred_activity_types: Mapped[list[str] | None] = mapped_column(
+    preferred_activity_types: Mapped[Optional[list[str]]] = mapped_column(
         JSONB,
         nullable=True,
         comment="e.g., ['sports', 'arts', 'stem', 'music']",
     )
 
     # Notes (free-form text for parent context)
-    notes: Mapped[str | None] = mapped_column(
+    notes: Mapped[Optional[str]] = mapped_column(
         Text,
         nullable=True,
         comment="Parent notes about child interests, strengths, concerns",

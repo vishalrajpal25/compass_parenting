@@ -1,7 +1,9 @@
 """
 Pydantic schemas for authentication.
 """
-from pydantic import BaseModel, EmailStr, Field
+from datetime import datetime
+
+from pydantic import BaseModel, EmailStr, Field, field_serializer
 
 
 class UserRegister(BaseModel):
@@ -42,6 +44,11 @@ class UserResponse(BaseModel):
     id: int = Field(..., description="User ID")
     email: str = Field(..., description="User email")
     is_active: bool = Field(..., description="User active status")
-    created_at: str = Field(..., description="User creation timestamp")
+    created_at: datetime = Field(..., description="User creation timestamp")
+
+    @field_serializer('created_at')
+    def serialize_datetime(self, dt: datetime) -> str:
+        """Serialize datetime to ISO format string."""
+        return dt.isoformat()
 
     model_config = {"from_attributes": True}
