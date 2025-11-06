@@ -1,10 +1,10 @@
 """
 Pydantic schemas for child profiles.
 """
-from datetime import date
-from typing import Any
+from datetime import date, datetime
+from typing import Any, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_serializer
 
 
 class TemperamentSchema(BaseModel):
@@ -53,29 +53,29 @@ class ScheduleWindow(BaseModel):
 class ConstraintsSchema(BaseModel):
     """Schema for child constraints."""
 
-    schedule_windows: list[ScheduleWindow] | None = Field(
+    schedule_windows: Optional[list[ScheduleWindow]] = Field(
         None,
         description="Available schedule windows",
     )
-    max_activities_per_week: int | None = Field(
+    max_activities_per_week: Optional[int] = Field(
         None,
         ge=1,
         le=7,
         description="Maximum activities per week",
     )
-    special_needs: str | None = Field(
+    special_needs: Optional[str] = Field(
         None,
         description="Special needs or accommodations",
     )
-    dietary_restrictions: str | None = Field(
+    dietary_restrictions: Optional[str] = Field(
         None,
         description="Dietary restrictions",
     )
-    medical_notes: str | None = Field(
+    medical_notes: Optional[str] = Field(
         None,
         description="Medical considerations",
     )
-    neurodiversity_notes: str | None = Field(
+    neurodiversity_notes: Optional[str] = Field(
         None,
         description="Neurodiversity considerations",
     )
@@ -86,20 +86,20 @@ class ChildProfileCreate(BaseModel):
 
     name: str = Field(..., min_length=1, max_length=100, description="Child's name")
     birth_date: date = Field(..., description="Birth date (YYYY-MM-DD)")
-    temperament: TemperamentSchema | None = Field(None, description="Temperament profile")
-    primary_goal: str | None = Field(None, max_length=100, description="Primary goal")
-    secondary_goal: str | None = Field(None, max_length=100, description="Secondary goal")
-    tertiary_goal: str | None = Field(None, max_length=100, description="Tertiary goal")
-    custom_goals: list[str] | None = Field(
+    temperament: Optional[TemperamentSchema] = Field(None, description="Temperament profile")
+    primary_goal: Optional[str] = Field(None, max_length=100, description="Primary goal")
+    secondary_goal: Optional[str] = Field(None, max_length=100, description="Secondary goal")
+    tertiary_goal: Optional[str] = Field(None, max_length=100, description="Tertiary goal")
+    custom_goals: Optional[list[str]] = Field(
         None,
         description="Custom free-form goals",
     )
-    constraints: ConstraintsSchema | None = Field(None, description="Scheduling constraints")
-    preferred_activity_types: list[str] | None = Field(
+    constraints: Optional[ConstraintsSchema] = Field(None, description="Scheduling constraints")
+    preferred_activity_types: Optional[list[str]] = Field(
         None,
         description="Preferred activity types (e.g., sports, arts, stem)",
     )
-    notes: str | None = Field(
+    notes: Optional[str] = Field(
         None,
         description="Additional notes about child",
     )
@@ -108,16 +108,16 @@ class ChildProfileCreate(BaseModel):
 class ChildProfileUpdate(BaseModel):
     """Schema for updating a child profile."""
 
-    name: str | None = None
-    birth_date: date | None = None
-    temperament: dict[str, Any] | None = None
-    primary_goal: str | None = None
-    secondary_goal: str | None = None
-    tertiary_goal: str | None = None
-    custom_goals: list[str] | None = None
-    constraints: dict[str, Any] | None = None
-    preferred_activity_types: list[str] | None = None
-    notes: str | None = None
+    name: Optional[str] = None
+    birth_date: Optional[date] = None
+    temperament: Optional[dict[str, Any]] = None
+    primary_goal: Optional[str] = None
+    secondary_goal: Optional[str] = None
+    tertiary_goal: Optional[str] = None
+    custom_goals: Optional[list[str]] = None
+    constraints: Optional[dict[str, Any]] = None
+    preferred_activity_types: Optional[list[str]] = None
+    notes: Optional[str] = None
 
 
 class ChildProfileResponse(BaseModel):
@@ -128,15 +128,20 @@ class ChildProfileResponse(BaseModel):
     name: str = Field(..., description="Child's name")
     birth_date: date = Field(..., description="Birth date")
     age: int = Field(..., description="Current age (calculated)")
-    temperament: dict[str, Any] | None = Field(None, description="Temperament profile")
-    primary_goal: str | None = Field(None, description="Primary goal")
-    secondary_goal: str | None = Field(None, description="Secondary goal")
-    tertiary_goal: str | None = Field(None, description="Tertiary goal")
-    custom_goals: list[str] | None = Field(None, description="Custom goals")
-    constraints: dict[str, Any] | None = Field(None, description="Constraints")
-    preferred_activity_types: list[str] | None = Field(None, description="Activity types")
-    notes: str | None = Field(None, description="Notes")
-    created_at: str = Field(..., description="Creation timestamp")
-    updated_at: str = Field(..., description="Last update timestamp")
+    temperament: Optional[dict[str, Any]] = Field(None, description="Temperament profile")
+    primary_goal: Optional[str] = Field(None, description="Primary goal")
+    secondary_goal: Optional[str] = Field(None, description="Secondary goal")
+    tertiary_goal: Optional[str] = Field(None, description="Tertiary goal")
+    custom_goals: Optional[list[str]] = Field(None, description="Custom goals")
+    constraints: Optional[dict[str, Any]] = Field(None, description="Constraints")
+    preferred_activity_types: Optional[list[str]] = Field(None, description="Activity types")
+    notes: Optional[str] = Field(None, description="Notes")
+    created_at: datetime = Field(..., description="Creation timestamp")
+    updated_at: datetime = Field(..., description="Last update timestamp")
+
+    @field_serializer('created_at', 'updated_at')
+    def serialize_datetime(self, dt: datetime) -> str:
+        """Serialize datetime to ISO format string."""
+        return dt.isoformat()
 
     model_config = {"from_attributes": True}

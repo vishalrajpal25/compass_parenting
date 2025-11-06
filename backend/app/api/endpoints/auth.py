@@ -1,7 +1,7 @@
 """
 Authentication endpoints.
 """
-from typing import Annotated
+from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from jose import JWTError
@@ -122,8 +122,8 @@ async def refresh_token(
 
     try:
         payload = decode_token(token_in.refresh_token)
-        user_id: str | None = payload.get("sub")
-        token_type: str | None = payload.get("type")
+        user_id: Optional[str] = payload.get("sub")
+        token_type: Optional[str] = payload.get("type")
 
         if user_id is None or token_type != "refresh":
             raise credentials_exception
