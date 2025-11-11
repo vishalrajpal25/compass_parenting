@@ -56,6 +56,7 @@ sendgrid==6.11.0
 python-dateutil==2.8.2
 pytz==2023.3
 Levenshtein==0.23.0
+pyyaml==6.0.1
 
 # Testing
 pytest==7.4.3
@@ -72,3 +73,9 @@ ipython==8.18.1
 
 # Monitoring
 sentry-sdk==1.38.0
+
+# Rate Limiting
+slowapi==0.1.9
+
+# Password Validation
+password-strength==0.0.3.post2

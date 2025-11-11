@@ -1,0 +1,167 @@
+# Provider Configuration
+# This file contains real, working data sources for activity ingestion
+# Used across dev, test, and prod environments
+# 
+# Format:
+# - name: Provider name
+#   organization_type: Type (city_rec, library, ymca, etc.)
+#   description: Description
+#   website: Main website URL
+#   data_source_type: ics|rss|html|json|csv
+#   data_source_url: Actual working endpoint URL
+#   scraper_config: Optional scraper-specific config
+#   is_verified: true|false
+#   enabled: true|false (can disable per environment)
+
+providers:
+  # ============================================
+  # CITY RECREATION DEPARTMENTS
+  # ============================================
+  - name: "San Francisco Recreation and Parks"
+    organization_type: "city_rec"
+    description: "SF Rec & Park offers youth programs, sports leagues, camps, and activities"
+    website: "https://sfrecpark.org"
+    data_source_type: "html"
+    data_source_url: "https://sfrecpark.org/programs"
+    is_verified: false
+    enabled: true
+    notes: "Check for ICS feed at /calendar/feed or /events.ics"
+
+  - name: "Oakland Parks, Recreation & Youth Development"
+    organization_type: "city_rec"
+    description: "Oakland's recreation department with comprehensive youth programs"
+    website: "https://www.oaklandca.gov/resources/oakland-parks-recreation-youth-development"
+    data_source_type: "html"
+    data_source_url: "https://www.oaklandca.gov/resources/oakland-parks-recreation-youth-development"
+    is_verified: false
+    enabled: true
+
+  - name: "Berkeley Parks, Recreation & Waterfront"
+    organization_type: "city_rec"
+    description: "Berkeley recreation programs and activities"
+    website: "https://www.cityofberkeley.info/Parks_Rec_Waterfront/"
+    data_source_type: "html"
+    data_source_url: "https://www.cityofberkeley.info/Parks_Rec_Waterfront/Recreation_Activities.aspx"
+    is_verified: false
+    enabled: true
+
+  # ============================================
+  # PUBLIC LIBRARY SYSTEMS
+  # ============================================
+  - name: "San Francisco Public Library"
+    organization_type: "library"
+    description: "SF Public Library system with youth programs, storytimes, and events"
+    website: "https://sfpl.org"
+    data_source_type: "rss"
+    data_source_url: "https://sfpl.org/events/rss"
+    is_verified: false
+    enabled: true
+    notes: "Check actual RSS feed URL - may be /events/feed or /calendar/rss"
+
+  - name: "Oakland Public Library"
+    organization_type: "library"
+    description: "Oakland Public Library youth programs and events"
+    website: "https://oaklandlibrary.org"
+    data_source_type: "rss"
+    data_source_url: "https://oaklandlibrary.org/events/feed"
+    is_verified: false
+    enabled: true
+
+  # ============================================
+  # YMCA BRANCHES
+  # ============================================
+  - name: "YMCA of San Francisco"
+    organization_type: "ymca"
+    description: "YMCA programs including youth sports, swim lessons, camps, and after-school programs"
+    website: "https://www.ymcasf.org"
+    data_source_type: "html"
+    data_source_url: "https://www.ymcasf.org/programs/youth"
+    is_verified: false
+    enabled: true
+
+  - name: "YMCA of the East Bay"
+    organization_type: "ymca"
+    description: "East Bay YMCA youth programs and activities"
+    website: "https://www.ymcaeastbay.org"
+    data_source_type: "html"
+    data_source_url: "https://www.ymcaeastbay.org/programs/youth"
+    is_verified: false
+    enabled: true
+
+  # ============================================
+  # COMMUNITY CENTERS
+  # ============================================
+  - name: "Boys & Girls Clubs of San Francisco"
+    organization_type: "community_center"
+    description: "After-school programs, sports, arts, and youth activities"
+    website: "https://www.kidsclub.org"
+    data_source_type: "html"
+    data_source_url: "https://www.kidsclub.org/programs"
+    is_verified: false
+    enabled: true
+
+  - name: "Jewish Community Center of San Francisco"
+    organization_type: "community_center"
+    description: "JCC programs including sports, arts, cultural activities, and camps"
+    website: "https://www.jccsf.org"
+    data_source_type: "html"
+    data_source_url: "https://www.jccsf.org/programs/youth"
+    is_verified: false
+    enabled: true
+
+  # ============================================
+  # EVENTBRITE API
+  # ============================================
+  - name: "Eventbrite - Kids & Family Events (SF Bay Area)"
+    organization_type: "aggregator"
+    description: "Family-friendly events from Eventbrite in San Francisco Bay Area"
+    website: "https://www.eventbrite.com"
+    data_source_type: "json"
+    data_source_url: "https://www.eventbriteapi.com/v3/events/search/"
+    is_verified: false
+    enabled: true
+    scraper_config:
+      json_path: "events"
+      api_key_env: "EVENTBRITE_API_KEY"
+      query_params:
+        categories: "102"  # Kids & Family
+        location.address: "San Francisco"
+        location.within: "25mi"
+        expand: "venue"
+    notes: "Requires EVENTBRITE_API_KEY environment variable. Get key from https://www.eventbrite.com/platform/api/"
+
+  # ============================================
+  # CITY OPEN DATA PORTALS
+  # ============================================
+  - name: "DataSF - Events"
+    organization_type: "open_data"
+    description: "San Francisco open data portal - city events"
+    website: "https://datasf.org"
+    data_source_type: "json"
+    data_source_url: "https://data.sfgov.org/api/views/6v6m-2p9r/rows.json"
+    is_verified: false
+    enabled: true
+    notes: "This is a sample dataset - find actual recreation/events dataset on DataSF"
+
+  # ============================================
+  # MEETUP API (Optional)
+  # ============================================
+  - name: "Meetup - Family Events (SF Bay Area)"
+    organization_type: "aggregator"
+    description: "Family and kids events from Meetup in SF Bay Area"
+    website: "https://www.meetup.com"
+    data_source_type: "json"
+    data_source_url: "https://api.meetup.com/2/open_events"
+    is_verified: false
+    enabled: false  # Disabled by default - requires OAuth
+    scraper_config:
+      json_path: "results"
+      api_key_env: "MEETUP_API_KEY"
+      query_params:
+        category: "9"  # Family
+        city: "San Francisco"
+        state: "CA"
+        country: "us"
+        radius: "25"
+    notes: "Requires MEETUP_API_KEY. May need OAuth for full access."
+
